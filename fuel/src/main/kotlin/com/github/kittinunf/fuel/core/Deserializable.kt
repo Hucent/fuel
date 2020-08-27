@@ -205,8 +205,17 @@ private fun <T : Any, U : Deserializable<T>> Request.response(
             executionOptions.callback {
                 deliverable.fold(
                     { success(this, response, it) },
-                    { failure(this, response, FuelError.wrap(it, response).also { error ->
-                        Fuel.trace { "[Deserializable] unfold failure: \n\r$error" } })
+                    { 
+                        try {
+                        failure(this, response, FuelError.wrap(it, response).also { error ->
+                            Fuel.trace { "[Deserializable] unfold failure: \n\r$error" } 
+                        })
+                            }
+catch(e: Exception){
+    failure(this, response, FuelError(it, response).also { error ->
+                            Fuel.trace { "[Deserializable] unfold failure: \n\r$error" } 
+                        })
+    }
                     }
                 )
             }
